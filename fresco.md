@@ -203,4 +203,4 @@ hierarchy.setRoundingParams(roundingParams);
 |fitXY|	不保存宽高比，填充满显示边界。|
 |none|	如要使用tile mode显示, 需要设置为none|
 
-各种scaleType https://blog.csdn.net/u012947056/article/details/46816153
+[各种scaleType](https://blog.csdn.net/u012947056/article/details/46816153)
