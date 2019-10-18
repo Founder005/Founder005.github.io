@@ -191,6 +191,7 @@ hierarchy.setRoundingParams(roundingParams);
 | Uri中指定图片数据 | data:mime/type;base64, |	数据类型必须符合 rfc2397规定 (仅支持 UTF-8) |
 
 ### 各种缩放
+
 |类型|描述|
 |--|--|
 |center|	居中，无缩放。|
@@ -204,3 +205,12 @@ hierarchy.setRoundingParams(roundingParams);
 |none|	如要使用tile mode显示, 需要设置为none|
 
 [各种scaleType](https://blog.csdn.net/u012947056/article/details/46816153)
+
+### Fresco加载流程
+
+1. 检查内存缓存，如有，返回
+2. 后台线程开始后续工作
+3. 检查是否在未解码内存缓存中。如有，解码，变换，返回，然后缓存到内存缓存中
+4. 检查是否在磁盘缓存中，如果有，变换，返回。缓存到未解码缓存和内存缓存中
+5. 从网络或者本地加载。加载完成后，解码，变换，返回。存到各个缓存中
+![加载流程](https://www.fresco-cn.org/static/imagepipeline.png)
