@@ -11,8 +11,23 @@
 #### 缺点
 - 体积过大，虽然可以通过gradle过滤so库，相比glide依然庞大；
 - 获取bitmap不容易
+- 布局文件不支持宽高同时设置`wrapcontet`,必须固定尺寸或者使用宽高比
 
 Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，但是不支持原有的ImageView的`setImageXxx，setScaleType`和类似方法，相当于一个全新的ImageView，使用自定义的属性和方法，xml文件中使用`SimpleDraweeView`代替`ImageView`
+
+#### 开始使用
+#### 1.build.gradle引入
+`implementation 'com.facebook.fresco:fresco:2.0.0'`
+###### 支持gif
+`implementation 'com.facebook.fresco:animated-gif:2.0.0'`
+###### 支持WebP动图
+`implementation 'com.facebook.fresco:animated-webp:2.0.0'`
+###### 支持WebP静图
+`implementation 'com.facebook.fresco:webpsupport:2.0.0'`
+#### 2.初始化
+自定义的Application中onCreate方法`Fresco.initialize(this);`
+#### 3.xml文件中加入命名空间
+`xmlns:fresco="http://schemas.android.com/apk/res-auto"`
 
 ```
 <com.facebook.drawee.view.SimpleDraweeView
