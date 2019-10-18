@@ -1,21 +1,21 @@
 # Fresco
-#### 特性
+### 特性
 - 支持渐进式图片展示
 - 支持自定义焦点 foucsCrop
-- 支持gif和webP
+- 支持gif和webP(可以使老Android版本同样获得支持能力)
 - 图片不显示时及时释放内存，减少OOM，在低端机上同样表现出色
 - 支持设置叠加图overlayImage（比如加个水印图）和按压图
 - 更方便的裁剪圆形和圆角
 - 支持宽高比显示
 
-#### 缺点
+### 缺点
 - 体积过大，虽然可以通过gradle过滤so库，相比glide依然庞大；
 - 获取bitmap不容易
 - 布局文件不支持宽高同时设置`wrapcontet`,必须固定尺寸或者使用宽高比
 
 Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，但是不支持原有的ImageView的`setImageXxx，setScaleType`和类似方法，相当于一个全新的ImageView，使用自定义的属性和方法，xml文件中使用`SimpleDraweeView`代替`ImageView`
 
-#### 开始使用
+### 开始使用
 #### 1.build.gradle引入
 `implementation 'com.facebook.fresco:fresco:2.0.0'`
 ###### 支持gif
@@ -87,7 +87,97 @@ Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，�
 | roundWithOverlayColor  | 圆形或者圆角图底下的叠加颜色(只能设置颜色)  |
 | viewAspectRatio  | 控件纵横比  |
 
+### GenericDraweeHierarchy
+#### 代码中使用
+一般设置图片使用`mSimpleDraweeView.setImageURI(uri);`配合xml中的各种效果就可以了，推荐使用这一种，容易理解而且一般我们也不需要另外设置某个图片的展示效果，除了最终要显示的目标图片，所有的图片层都可以在 XML 里面设置，他们的值可以是一个 @drawable/ 图片资源 或者 @color 颜色资源。
+当然如果必须在代码中改变，fresco也提供的有方法，如下:
+代码中设置xml中的效果使用`GenericDraweeHierarchy`
+```
+GenericDraweeHierarchyBuilder builder =
+                new GenericDraweeHierarchyBuilder(getResources());
+GenericDraweeHierarchy hierarchy = builder
+                //.setPlaceholderImage()
+                //...
+                .setProgressBarImage(new ProgressBarDrawable())
+                .build();
+ simpleDraweeView.setHierarchy(hierarchy);
+```
 
+比较特殊的：
+1.如果选择的缩放类型是focusCrop，需要指定一个中心点：`hierarchy.setActualImageFocusPoint(point);`
+2.如果设置的圆形（原来为圆角的不能修改为圆圈，反之亦然），需要先获取圆角的参数
+```
+RoundingParams roundingParams = hierarchy.getRoundingParams();
+roundingParams.setCornersRadius(10);
+hierarchy.setRoundingParams(roundingParams);
+```
+ 
+> 对于同一个View，不要多次调用setHierarchy，即使这个View是可回收的,可以通过`simpleDraweeView.getHierarchy();`获取到该simpleDraweeView的hierarchy然后去修改效果。创建 DraweeHierarchy 的较为耗时的一个过程，应该多次利用。
+> 注意：一个DraweeHierarchy 是不可以被多个 View 共用的！实验证明，共用只会在最后一个view上生效
 
+### DraweeController
+#### 设置点击重试
+在某些app中，当加载图片失败时，可以点击重新加载，fresco提供了这一功能，而且很容易使用
+在xml中设置好retry的图片后，在代码中需要通过DraweeController控制
+```
+  DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setTapToRetryEnabled(true)
+                .setOldController(simpleDraweeView3.getController())
+                .setUri("http://hbimg.b00.upaiyun.com/12d9aab22322829a2beb01000a549156fc3e65902f415-Xw2YIl_fw658")
+                .build();
+```
+> 点击重试有四次机会，如果还是加载失败，则显示加载失败提示图片。
+> 在指定一个新的controller的时候，使用setOldController，后续需要设置其他的控制时，可以通过`simpleDraweeView.getController()`获取原来的conller,这可节省不必要的内存分配。
+
+#### 监听图片加载的过程
+```
+   ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
+            @Override
+            public void onSubmit(String id, Object callerContext) {
+                super.onSubmit(id, callerContext); //在提交图像请求之前调用。显示图像的第一步
+            }
+
+            @Override
+            public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                super.onFinalImageSet(id, imageInfo, animatable);//2显示第二部 设置完最终图像后调用。
+                if (imageInfo == null) {
+                    return;
+                }
+                //此处可以获取图片的信息
+                QualityInfo qualityInfo = imageInfo.getQualityInfo();
+                        imageInfo.getWidth(),
+                        imageInfo.getHeight(),
+                        qualityInfo.getQuality(),
+                        qualityInfo.isOfGoodEnoughQuality(),
+                        qualityInfo.isOfFullQuality()));
+            }
+
+            @Override
+            public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
+                super.onIntermediateImageSet(id, imageInfo); //设置任何中间图像后调用。用于加载渐进式图片时回调
+            }
+
+            @Override
+            public void onIntermediateImageFailed(String id, Throwable throwable) {
+                super.onIntermediateImageFailed(id, throwable); //在获取中间映像失败后调用。用于加载渐进式图片时回调
+            }
+
+            @Override
+            public void onFailure(String id, Throwable throwable) {
+                super.onFailure(id, throwable);
+            }
+
+            @Override
+            public void onRelease(String id) {
+                super.onRelease(id);//view不可见时,走这个方法，比如activity消失，挂起，该图片view隐藏
+            }
+        };
+         DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setTapToRetryEnabled(true)
+                .setOldController(simpleDraweeView3.getController())
+                .setUri("http://hbimg.b0.upaiyun.com/12d9aab22322829a2beb01000a549156fc3e65902f415-Xw2YIl_fw658")
+                .setControllerListener(controllerListener)
+                .build();
+```
 
 
