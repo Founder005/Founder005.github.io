@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta name="generator"
+    content="HTML Tidy for HTML5 (experimental) for Windows https://github.com/w3c/tidy-html5/tree/c63cc39" />
+    <meta charset="utf-8" />
+    <title>Markdown在线编辑器 - www.MdEditor.com</title>
+    <link rel="shortcut icon" href="https://www.mdeditor.com/images/logos/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <h1 id="h1-fresco">
+    <a name="Fresco" class="reference-link"></a>Fresco</h1>
+    <h4 id="h4-u7279u6027">
+    <a name="特性" class="reference-link"></a>特性</h4>
+    <ul>
+      <li>支持渐进式图片展示</li>
+      <li>支持自定义焦点 foucsCrop</li>
+      <li>支持gif和webP</li>
+      <li>图片不显示时及时释放内存，减少OOM，在低端机上同样表现出色</li>
+      <li>支持设置叠加图overlayImage（比如加个水印图）和按压图</li>
+      <li>更方便的裁剪圆形和圆角</li>
+      <li>支持宽高比显示</li>
+    </ul>
+    <h4 id="h4-u7F3Au70B9">
+    <a name="缺点" class="reference-link"></a>缺点</h4>
+    <ul>
+      <li>体积过大，虽然可以通过gradle过滤so库，相比glide依然庞大；</li>
+      <li>获取bitmap不容易</li>
+    </ul>
+    <p>
+    Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，但是不支持原有的ImageView的setImageXxx，setScaleType和类似方法，相当于一个全新的ImageView，使用自定义的属性和方法，xml文件中使用SimpleDraweeView代替ImageView</p>
+    <pre class="prettyprint linenums prettyprinted" style=""></pre>
+    <ol class="linenums">
+      <li class="L0">
+        <code>
+          <span class="tag">&lt;com.facebook.drawee.view.SimpleDraweeView</span>
+        </code>
+      </li>
+      <li class="L1">
+        <code>
+          <span class="atn">android:id</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@+id/my_image_view&quot;</span>
+        </code>
+      </li>
+      <li class="L2">
+        <code>
+          <span class="atn">android:layout_width</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;20dp&quot;</span>
+        </code>
+      </li>
+      <li class="L3">
+        <code>
+          <span class="atn">android:layout_height</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;20dp&quot;</span>
+        </code>
+      </li>
+      <li class="L4">
+        <code>
+          <span class="atn">fresco:fadeDuration</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;300&quot;</span>
+        </code>
+      </li>
+      <li class="L5">
+        <code>
+        <span class="atn">fresco:actualImageScaleType</span>
+        <span class="pun">=</span>
+        <span class="atv">&quot;focusCrop&quot;</span> </code>
+      </li>
+      <li class="L6">
+        <code>
+          <span class="atn">fresco:placeholderImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@color/wait_color&quot;</span>
+        </code>
+      </li>
+      <li class="L7">
+        <code>
+          <span class="atn">fresco:placeholderImageScaleType</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;fitCenter&quot;</span>
+        </code>
+      </li>
+      <li class="L8">
+        <code>
+          <span class="atn">fresco:failureImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@drawable/error&quot;</span>
+        </code>
+      </li>
+      <li class="L9">
+        <code>
+          <span class="atn">fresco:failureImageScaleType</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;centerInside&quot;</span>
+        </code>
+      </li>
+      <li class="L0">
+        <code>
+          <span class="atn">fresco:retryImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@drawable/retrying&quot;</span>
+        </code>
+      </li>
+      <li class="L1">
+        <code>
+          <span class="atn">fresco:retryImageScaleType</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;centerCrop&quot;</span>
+        </code>
+      </li>
+      <li class="L2">
+        <code>
+          <span class="atn">fresco:progressBarImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@drawable/progress_bar&quot;</span>
+        </code>
+      </li>
+      <li class="L3">
+        <code>
+          <span class="atn">fresco:progressBarImageScaleType</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;centerInside&quot;</span>
+        </code>
+      </li>
+      <li class="L4">
+        <code>
+          <span class="atn">fresco:progressBarAutoRotateInterval</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;1000&quot;</span>
+        </code>
+      </li>
+      <li class="L5">
+        <code>
+          <span class="atn">fresco:backgroundImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@color/blue&quot;</span>
+        </code>
+      </li>
+      <li class="L6">
+        <code>
+          <span class="atn">fresco:overlayImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@drawable/watermark&quot;</span>
+        </code>
+      </li>
+      <li class="L7">
+        <code>
+          <span class="atn">fresco:pressedStateOverlayImage</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@color/red&quot;</span>
+        </code>
+      </li>
+      <li class="L8">
+        <code>
+          <span class="atn">fresco:roundAsCircle</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;false&quot;</span>
+        </code>
+      </li>
+      <li class="L9">
+        <code>
+          <span class="atn">fresco:roundedCornerRadius</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;1dp&quot;</span>
+        </code>
+      </li>
+      <li class="L0">
+        <code>
+          <span class="atn">fresco:roundTopLeft</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;true&quot;</span>
+        </code>
+      </li>
+      <li class="L1">
+        <code>
+          <span class="atn">fresco:roundTopRight</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;false&quot;</span>
+        </code>
+      </li>
+      <li class="L2">
+        <code>
+          <span class="atn">fresco:roundBottomLeft</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;false&quot;</span>
+        </code>
+      </li>
+      <li class="L3">
+        <code>
+          <span class="atn">fresco:roundBottomRight</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;true&quot;</span>
+        </code>
+      </li>
+      <li class="L4">
+        <code>
+          <span class="atn">fresco:roundWithOverlayColor</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@color/corner_color&quot;</span>
+        </code>
+      </li>
+      <li class="L5">
+        <code>
+          <span class="atn">fresco:roundingBorderWidth</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;2dp&quot;</span>
+        </code>
+      </li>
+      <li class="L6">
+        <code>
+          <span class="atn">fresco:roundingBorderColor</span>
+          <span class="pun">=</span>
+          <span class="atv">&quot;@color/border_color&quot;</span>
+        </code>
+      </li>
+      <li class="L7">
+        <code>
+          <span class="tag">/&gt;</span>
+        </code>
+      </li>
+    </ol>
+    <table>
+      <thead>
+        <tr>
+          <th>属性</th>
+          <th>含义</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>fadeDuration</td>
+          <td>淡入淡出动画持续时间(单位：毫秒ms)</td>
+        </tr>
+        <tr>
+          <td>actualImageScaleType</td>
+          <td>实际图像的缩放类型</td>
+        </tr>
+        <tr>
+          <td>placeholderImage</td>
+          <td>占位图</td>
+        </tr>
+        <tr>
+          <td>placeholderImageScaleType</td>
+          <td>占位图缩放类型</td>
+        </tr>
+        <tr>
+          <td>failureImage</td>
+          <td>失败图</td>
+        </tr>
+        <tr>
+          <td>failureImageScaleType</td>
+          <td>失败图的缩放类型</td>
+        </tr>
+        <tr>
+          <td>retryImage</td>
+          <td>重试图</td>
+        </tr>
+        <tr>
+          <td>retryImageScaleType</td>
+          <td>重试图的缩放类型</td>
+        </tr>
+        <tr>
+          <td>progressBarImage</td>
+          <td>进度图</td>
+        </tr>
+        <tr>
+          <td>progressBarImageScaleType</td>
+          <td>进度图的缩放类型</td>
+        </tr>
+        <tr>
+          <td>progressBarAutoRotateInterval</td>
+          <td>进度图自动旋转间隔时间(单位：毫秒ms)</td>
+        </tr>
+        <tr>
+          <td>backgroundImage</td>
+          <td>背景图或颜色</td>
+        </tr>
+        <tr>
+          <td>overlayImage</td>
+          <td>叠加图</td>
+        </tr>
+        <tr>
+          <td>pressedStateOverlayImage</td>
+          <td>按压时显示图或者颜色</td>
+        </tr>
+        <tr>
+          <td>roundAsCircle</td>
+          <td>是否设置圆形（boolean）</td>
+        </tr>
+        <tr>
+          <td>roundedCornerRadius</td>
+          <td>
+          圆角的角度（当我们同时设置图像显示为圆形图像和圆角图像时，只会显示为圆形图像）</td>
+        </tr>
+        <tr>
+          <td>roundTopLeft</td>
+          <td>左上圆角（boolean）</td>
+        </tr>
+        <tr>
+          <td>roundTopRight</td>
+          <td>右上圆角（boolean）</td>
+        </tr>
+        <tr>
+          <td>roundBottomLeft</td>
+          <td>左下角是否为圆角 (boolean）</td>
+        </tr>
+        <tr>
+          <td>roundBottomRight</td>
+          <td>右下角是否为圆角（boolean）</td>
+        </tr>
+        <tr>
+          <td>roundingBorderWidth</td>
+          <td>圆形或者圆角图边框的宽度</td>
+        </tr>
+        <tr>
+          <td>roundingBorderColor</td>
+          <td>圆形或者圆角图边框的颜色</td>
+        </tr>
+        <tr>
+          <td>roundWithOverlayColor</td>
+          <td>圆形或者圆角图底下的叠加颜色(只能设置颜色)</td>
+        </tr>
+        <tr>
+          <td>viewAspectRatio</td>
+          <td>控件纵横比</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
