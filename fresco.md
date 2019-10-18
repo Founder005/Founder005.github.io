@@ -12,7 +12,7 @@
 - 体积过大，虽然可以通过gradle过滤so库，相比glide依然庞大；
 - 获取bitmap不容易
 
-Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，但是不支持原有的ImageView的setImageXxx，setScaleType和类似方法，相当于一个全新的ImageView，使用自定义的属性和方法，xml文件中使用SimpleDraweeView代替ImageView
+Fresco加载图片不是将图片放进ImageView，虽然继承自ImageView，但是不支持原有的ImageView的`setImageXxx，setScaleType`和类似方法，相当于一个全新的ImageView，使用自定义的属性和方法，xml文件中使用`SimpleDraweeView`代替`ImageView`
 
 ```
 <com.facebook.drawee.view.SimpleDraweeView
