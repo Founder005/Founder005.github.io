@@ -179,5 +179,14 @@ hierarchy.setRoundingParams(roundingParams);
                 .setControllerListener(controllerListener)
                 .build();
 ```
+### 加载图片的方式
 
+| 类型 | 方式 | 例子 |
+| -- | -- | -- |
+| 远程图片 |	http://, https:// |	HttpURLConnection 或者参考 使用其他网络加载方案 |
+| 本地文件 |	file://	| FileInputStream |
+| Content | provider |	content:// |	ContentResolver |
+| asset目录下的资源	 | asset:// |	AssetManager |
+| res目录下的资源 |	res:// |	Resources.openRawResource  (eg:Uri uri = Uri.parse("res://包名(实际可以是任何字符串甚至留空)/" + R.drawable.ic_launcher);这个需要3个///) |
+| Uri中指定图片数据 | data:mime/type;base64, |	数据类型必须符合 rfc2397规定 (仅支持 UTF-8) |
 
