@@ -5,9 +5,9 @@ Glide 内置了几个常用变化:
 - FitCenter
 - CircleCrop
 
-可以使用`dontTransform`禁用图片变换,使用`.override(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL)`可以保留原始图片尺寸
-
 新版的Glide也支持圆角了:`RoundedCorners`
+
+可以使用`dontTransform`禁用图片变换,使用`.override(Target.SIZE_ORIGINAL,Target.SIZE_ORIGINAL)`可以保留原始图片尺寸
 
 默认使用方法：
 `Glide.with(this).load(url).centerCrop().into(imageView);`
@@ -70,8 +70,7 @@ if (!requestOptions.isTransformationSet()
       }
 ```
 
-根据源码可以发现，如果Glide没有手动调用过centerCrop和fitCenter，那么Glide从网络下载的图片格式，由ImageView的scaleType决定，如果scaleType是center_crop，那么Glide以centerCrop下载图片，
-如果scaleType是 FIT_CENTER，FIT_START，FIT_END，那么Glide以fitCenter格式下载图片。
+根据源码可以发现，如果Glide没有手动调用过centerCrop和fitCenter，那么Glide从网络下载的图片格式，由ImageView的scaleType决定，如果scaleType是center_crop，那么Glide以centerCrop下载图片，如果scaleType是 FIT_CENTER，FIT_START，FIT_END，那么Glide以fitCenter格式下载图片。
 测试发现，如果两者设置不同的scaleType，设置到ImageView的时候，还会根据ImageView的scaleType来确立图片位置，稍后我们以代码证明。
 
 在这里也提下郭林大神的那篇文章，文章给的例子是设置的wrapcontent，没有设置Glide的transform的时候，Glide使用的是imageView的fitCenter的缩放，百度的那张图片充满了，文中说由于ImageView默认的scaleType是FIT_CENTER，
@@ -99,16 +98,13 @@ if (!requestOptions.isTransformationSet()
 
 
 ### 自定义transform
-过去使用Glide加载圆形，加边框的圆形，圆角我都是找的网上别人自定义的transform，现在最新的Glide已经支持了圆形和圆角，我们可以试着写其他的变换，
-一般我们只需要变换 Bitmap，所以最好是从继承 BitmapTransformation 开始。BitmapTransformation 为我们处理了一些基础的东西，例如我们的变换返回了一个新修改的 Bitmap ，
-BitmapTransformation将负责提取和回收原始的 Bitmap，无需像网上有些自定义一样自己再去回收
-和RoundedCorners的源码我们可以试着写出自己的transform
+过去使用Glide加载圆形，加边框的圆形，圆角我都是找的网上别人自定义的transform，现在最新的Glide已经支持了圆形和圆角，我们可以试着写其他的变换，一般我们只需要变换 Bitmap，所以最好是从继承 BitmapTransformation 开始。BitmapTransformation 为我们处理了一些基础的东西，例如我们的变换返回了一个新修改的Bitmap ，BitmapTransformation将负责提取和回收原始的 Bitmap，无需像网上有些自定义一样自己再去回收
 
+查看RoundedCorners的源码我们可以试着写出自己的transform
 1. `equals()`
 2. `hashCode()`
 3. `updateDiskCacheKey`
-**这三个方法官方要求必须实现他们，以使磁盘和内存缓存正常工作**，虽然目前即使没有重写，编译也不会报错，如果你的 Transformation 
-需要参数而且它会影响到 Bitmap 被变换的方式，它们也必须被包含到这三个方法中，例如，Glide 的 RoundedCorners 变换接受一个 int，它决定了圆角的弧度。它的equals(), hashCode() 和 updateDiskCacheKey 实现看起来像这样：
+**这三个方法官方要求必须实现他们，以使磁盘和内存缓存正常工作**，虽然目前即使没有重写，编译也不会报错，如果你的 Transformation 需要参数而且它会影响到 Bitmap 被变换的方式，它们也必须被包含到这三个方法中，例如，Glide 的 RoundedCorners 变换接受一个 int，它决定了圆角的弧度。它的equals(), hashCode() 和 updateDiskCacheKey 实现看起来像这样：
 
 ```
 //重写epquals和hashcode方法，确保对象唯一性，
@@ -134,11 +130,10 @@ BitmapTransformation将负责提取和回收原始的 Bitmap，无需像网上�
     messageDigest.update(radiusData);
   }
 ```
-关于updateDiskCacheKey的写法，网上也比较多，推荐一个三方转换库的写法：messageDigest.update((ID + borderSize + borderColor).getBytes(CHARSET));
+关于updateDiskCacheKey的写法，网上也比较多，推荐一个三方转换库的写法：messageDigest.update((ID + borderSize +borderColor).getBytes(CHARSET));
 额外的参数加入到这三个方法主要是为了保证唯一性。
 
 接下来我们试着编写自己的`transform`
-
 首先，我们着重看RoundedCorners的`transform`方法，centerCrop同理也是这个方法
 ```
 @Override
