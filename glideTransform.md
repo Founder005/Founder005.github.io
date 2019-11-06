@@ -38,8 +38,7 @@ Glide.with(activity)
 ```
 注意向 MultiTransformation 的构造器传入变换参数的顺序，决定了这些变换的应用顺序。
 
-这里需要提一下的是，Glide的scaleType和imageView的scaleType互相影响的问题
-从`.into`的源码中可以找到一些答案：
+这里需要提一下的是，Glide的scaleType和imageView的scaleType互相影响的问题,从`.into`的源码中可以找到一些答案：
 
 ```
 if (!requestOptions.isTransformationSet()
@@ -95,15 +94,15 @@ if (!requestOptions.isTransformationSet()
 
 发现`isScaleOnlyOrNoTransform`是true，根据意思仅缩放不变换，设置`dontTransform`仅仅是禁用了变换。当然，也可能是版本不一致的原因，本文使用的是最新的4.10.0
 
-
 ### 自定义transform
-过去使用Glide加载圆形，加边框的圆形，圆角我都是找的网上别人自定义的transform，现在最新的Glide已经支持了圆形和圆角，我们可以试着写其他的变换，一般我们只需要变换 Bitmap，所以最好是从继承 BitmapTransformation 开始。BitmapTransformation 为我们处理了一些基础的东西，例如我们的变换返回了一个新修改的Bitmap ，BitmapTransformation将负责提取和回收原始的 Bitmap，无需像网上有些自定义一样自己再去回收
+过去使用Glide加载圆形，加边框的圆形，圆角我都是找的网上别人自定义的transform，现在最新的Glide已经支持了圆形和圆角，我们可以试着写其他的变换，一般我们只需要变换Bitmap，所以最好是从继承`1BitmapTransformation`开始。`BitmapTransformation`为我们处理了一些基础的东西，例如我们的变换返回了一个新修改的Bitmap，`BitmapTransformation`将负责提取和回收原始的Bitmap，无需像网上有些自定义一样自己再去回收
 
-查看RoundedCorners的源码我们可以试着写出自己的transform
+参照`RoundedCorners`的源码我们可以试着写出自己的transform
 1. `equals()`
 2. `hashCode()`
 3. `updateDiskCacheKey`
-**这三个方法官方要求必须实现他们，以使磁盘和内存缓存正常工作**，虽然目前即使没有重写，编译也不会报错，如果你的 Transformation 需要参数而且它会影响到 Bitmap 被变换的方式，它们也必须被包含到这三个方法中，例如，Glide 的 RoundedCorners 变换接受一个 int，它决定了圆角的弧度。它的equals(), hashCode() 和 updateDiskCacheKey 实现看起来像这样：
+
+**这三个方法官方要求必须实现他们，以使磁盘和内存缓存正常工作**，虽然目前即使没有重写，编译也不会报错，如果你的Transformation需要参数而且它会影响到 Bitmap被变换的方式，它们也必须被包含到这三个方法中，例如，Glide 的RoundedCorners变换接受一个int，它决定了圆角的弧度。它的`equals()`,`hashCode()`和`updateDiskCacheKey`实现看起来像这样：
 
 ```
 //重写epquals和hashcode方法，确保对象唯一性，
@@ -196,10 +195,11 @@ public static Bitmap roundedCorners(
 第一个参数pool，这个是Glide中的一个Bitmap缓存池，用于对Bitmap对象进行重用，否则每次图片变换都重新创建Bitmap对象将会非常消耗内存。
 第二个参数toTransform，这个是原始图片的Bitmap对象，我们就是要对它来进行图片变换。第三和第四个参数比较简单，分别代表图片变换后的宽度和高度，其实也就是override()方法中传入的宽和高的值了
 从上面我们可以发现，变化最终使用的是`BitmapShader`(着色器),使用bitmap来填充给定的图形，它里面只有一个构造方法`BitmapShader(Bitmap bitmap, Shader.TileMode tileX, Shader.TileMode tileY)`
+
 参数：
-bitmap：用来做模板的 Bitmap 对象
-tileX：横向的 TileMode 视图剩余X轴方向的绘制方式
-tileY：纵向的 TileMode 视图剩余Y轴方向的绘制方式
+- bitmap：用来做模板的 Bitmap 对象
+- tileX：横向的 TileMode 视图剩余X轴方向的绘制方式
+- tileY：纵向的 TileMode 视图剩余Y轴方向的绘制方式
 
 TileMode 有三种取值
 - TileMode.CLAMP:用边缘色彩填充多余空间
@@ -209,8 +209,9 @@ TileMode 有三种取值
 开始试编写
 1. 首先继承`BitmapTransformation`
 2. 按照官方的写法定义三个变量
+
 ```
-	private static final int VERSION = 1;
+    private static final int VERSION = 1;
     private static final String ID = "com.gd.terminalmanager.glidetransformationdemo.transform.MyTransform." + VERSION;
     private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 ```
@@ -232,5 +233,6 @@ TileMode 有三种取值
     }
 ```
 4. 在**transform**方法中修改自己想要的变换风格
+
 通过` Bitmap result = pool.get(toTransform.getWidth(), toTransform.getHeight(), Bitmap.Config.ARGB_8888);`获取要进行变换的原位图，
 在此基础上进行裁剪，虚化，滤镜等操作，我们在代码中实验
