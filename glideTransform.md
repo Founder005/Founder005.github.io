@@ -71,11 +71,10 @@ if (!requestOptions.isTransformationSet()
 ```
 
 根据源码可以发现，如果Glide没有手动调用过centerCrop和fitCenter，那么Glide从网络下载的图片格式，由ImageView的scaleType决定，如果scaleType是center_crop，那么Glide以centerCrop下载图片，如果scaleType是 FIT_CENTER，FIT_START，FIT_END，那么Glide以fitCenter格式下载图片。
+
 测试发现，如果两者设置不同的scaleType，设置到ImageView的时候，还会根据ImageView的scaleType来确立图片位置，稍后我们以代码证明。
 
-在这里也提下郭林大神的那篇文章，文章给的例子是设置的wrapcontent，没有设置Glide的transform的时候，Glide使用的是imageView的fitCenter的缩放，百度的那张图片充满了，文中说由于ImageView默认的scaleType是FIT_CENTER，
-因此会自动添加一个FitCenter的图片变换，而在这个图片变换过程中做了某些操作，导致图片充满了全屏。文中说使用`dontTransform`就可以使刚才调用的applyCenterCrop()、applyFitCenter()就统统无效，
-但是我测试的是没有生效，查看`dontTransform`的源码
+在这里也提下郭林大神的那篇文章，文章给的例子是设置的wrapcontent，没有设置Glide的transform的时候，Glide使用的是imageView的fitCenter的缩放，百度的那张图片充满了，文中说由于ImageView默认的scaleType是FIT_CENTER，因此会自动添加一个FitCenter的图片变换，而在这个图片变换过程中做了某些操作，导致图片充满了全屏。文中说使用`dontTransform`就可以使刚才调用的applyCenterCrop()、applyFitCenter()就统统无效，但是我测试的是没有生效，查看`dontTransform`的源码
 
 ```
  public T dontTransform() {
